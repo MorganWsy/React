@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>29.getSnapshotBeforeUpdate方法的使用案例</title>
+  <style>
+    .news-list{
+      width: 200px;
+      height: 150px;
+      background-color: steelblue;
+      padding: 0;
+      list-style: none;
+      overflow: auto;
+    }
+    .news-item{
+      height: 30px;
+      line-height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+  <script src='../js/17.0.1/react.development.js'></script>
+  <script src='../js/17.0.1/react-dom.development.js'></script>
+  <script src='../js/17.0.1/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      实现的功能：
+        1、每隔1s添加1条新闻，新添加的在最上面；
+        2、滚轮滚动到一个区域后，新内容继续添加，但滚轮区域对应的新闻不变。
+    */
+    class NewsList extends React.Component{
+      // 初始化状态，一个空数组，来存放新闻
+      state = {newsArr: []}
+
+      componentDidMount(){
+        setInterval(() => {
+          // 获取原状态
+          const {newsArr} = this.state;
+          // 生成新的新闻
+          const news = `新闻${newsArr.length+1}`;
+          // 更新状态
+          this.setState({newsArr: [news,...newsArr]});
+        }, 1000);
+      }
+
+      getSnapshotBeforeUpdate(){
+        return this.refs['newsList'].scrollHeight;
+      }
+
+      componentDidUpdate(preProps,preState,height){
+        const {newsList} = this.refs;
+        newsList.scrollTop += newsList.scrollHeight - height;
+      }
+      render(){
+        return (
+          <ul className='news-list' ref='newsList'>
+            {
+              this.state.newsArr.map((item,index) => {
+               return <li className='news-item' key={index}>{item}</li> 
+              })
+            }
+          </ul>
+        )
+      }
+    }
+    ReactDOM.render(<NewsList/>, document.getElementById('demo'));
+  </script>
+</body>
+</html>

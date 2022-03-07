@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>28.生命周期函数(new)</title>
+
+</head>
+
+<body>
+  <div id="demo"></div>
+  <script src='../js/17.0.1/react.development.js'></script>
+  <script src='../js/17.0.1/react-dom.development.js'></script>
+  <script src='../js/17.0.1/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      - 废弃了三个生命周期函数（componentWillMount、componentWillUpdate、componentWillReceiveProps）
+      - 新增了两个生命周期函数（getDerivedStateFromProps、getSnapshotBeforeUpdate)，很少使用。
+      - getDerivedStateFromProps()方法：从props属性得到一个衍生的state属性。如果组件的state的值在任何适合都取决于props，则可以使用这个方法！！这个方法了解即可，没啥意义。
+        - 需要使用static关键字定义！！
+        - 必须有返回值————state对象或者null，不能是undefined，如果返回的是state对象且其中的属性和初始化state的属性相同，则组件的状态以这个对象为主（无论你怎么更新state的内容都没用）
+        - 可以接收两个参数————props属性、state属性
+      -getSnapshotBeforeUpdate()方法：更新组件之前获取组件的某些信息，如在10个人在列表中添加1个人之前，获取这10个人的列表的宽高...
+        - 接收两个参数————prevProps、prevState属性
+        - 必须有返回值————null或snapshotValue（任意值，除了undefined）
+        - 如果组件中定义了getSnapshotBeforeUpdate方法，则其返回的值是componentDidUpdate方法的第三个参数；如果没定义，则componentDidUpdate方法的第三个参数是undefined
+    */
+    class Count extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { count: 0 };
+        console.log('Count-----constructor()');
+      }
+
+      // static getDerivedStateFromProps(props, state){
+      //   // 可以发现，输出的props和state的结构一模一样
+      //   console.log('Count-----getDerivedStateFromProps()',props,state);
+      //   // return null;
+      //   // return {count: 100};
+      //   return props;
+      //   // return state;
+      // }
+
+      componentDidMount() {
+        console.log('Count-----componentDidMount()');
+      }
+
+      getSnapshotBeforeUpdate(prevProps, prevState){
+        console.log('getSnapshotBeforeUpdate()', prevProps, prevState);
+        return '我是snapshot返回值';
+
+      }
+      // 控制组件是否应该更新的阀门（不写这个函数，react会默认执行，且返回true；如果写了这个函数，一定要return true or false）
+      shouldComponentUpdate() {
+        console.log('Count-----shouldComponentUpdate()');
+        return true;
+      }
+
+      // 组件更新之后（一共可接收3个参数！！！）
+      componentDidUpdate(prevProps,prevState,snapshot) {
+        console.log('Count-----componentDidUpdate()', prevProps, prevState, snapshot);
+      }
+      
+      add = () => {
+        let { count } = this.state;
+        count++;
+        this.setState({ count });
+        // 这么写没用？！
+        // this.setState({count: count++});
+      }
+      // 在不改变组件状态的情况下，强制更新组件
+      force = () => {
+        this.forceUpdate();
+        console.log('Count-----强制更新了');
+      }
+      render() {
+        console.log('Count-----render()');
+        const { count } = this.state;
+        return (
+          <div>
+            <h2>当前计数为：{count}</h2>
+            <button onClick={this.add}>+1</button>
+            <button onClick={this.force}>强制更新</button>
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(<Count count={200}/>, document.getElementById('demo'));
+  </script>
+</body>
+
+</html>

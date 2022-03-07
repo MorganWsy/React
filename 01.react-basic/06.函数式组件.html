@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06.函数式组件</title>
+  <!-- 
+    1.模块：
+      如果将一个功能写入一个js文件（一个js文件对应一个功能），则一个js文件就是一个模块。
+    2.组件：
+      用来实现局部功能效果的代码和资源的集合(html/css/js/image等等)
+    3.函数式组件：
+      用函数的形式声明一个组件。适用于实现简单功能的组件 
+      注意：1、定义函数式组件，名称必须以大写字母开头！！，不然react无法识别这个函数是组件（jsx语法那节有讲）；
+          2、函数式组件必须有返回值！！
+          3、渲染虚拟DOM时，render()方法的第一个参数是函数式组件的名称（标签的形式，标签需要关闭！！）
+          4、组件内的this指向undefined，因为babel将jsx编译为js后，开启了严格模式（严格模式下，函数中的this不指向window对象）
+          5、react解析组件标签（如：<MyCompenent/>，找到了对应的组件，发现该组件是函数定义的，会调用该函数，将函数返回的虚拟dom转换为真实dom，并渲染到页面上。
+    4.类组件：
+      用类的形式声明一个组件。适用于实现复杂功能的组件
+   -->
+</head>
+<body>
+  <div id="demo"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type="text/babel">
+    // 定义函数式组件
+    function MyComponent(){
+      // undefined
+      console.log(this);
+      return <h2>这是函数式组件</h2>;
+    }
+    
+    // 也能渲染虚拟DOM
+    // ReactDOM.render(MyComponent(), document.getElementById('demo'));
+    ReactDOM.render(<MyComponent/>, document.getElementById('demo'));
+  </script>
+</body>
+</html>

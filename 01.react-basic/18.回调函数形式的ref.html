@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18.回调函数形式的ref</title>
+</head>
+
+<body>
+  <div id="demo"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      回调函数形式的ref：
+        - ref的属性值是一个回调函数，这个函数是由我们创建的，但不是我们调用的，react会帮我们调用。
+        - 回调函数默认的参数就是该dom元素；
+        - 通过箭头函数没有this的特点，一般会将dom元素绑定到组件实例对象的一个属性上，然后通过实例对象的this解构出来使用。
+    */
+    class Test extends React.Component {
+      render() {
+        console.log(this);
+        return (
+          <div>
+            <input ref={(dom) => {this.input1 = dom}} type='text' placeholder='请输入内容' style={{ marginRight: '5px' }} />
+            {/*<button onClick={this.showData}>提示左侧输入的内容</button> */}
+            <input ref={(dom) => {this.input2 = dom}} onBlur={this.showData2} type="text" placeholder='失去焦点后提示输入的内容' style={{ marginLeft: '5px' }} />
+          </div>
+        )
+      }
+      // 自定义方法
+      showData = () => {
+        const {input1} = this;
+        alert(input1.value);
+      }
+      showData2 = () => {
+        const { input2 } = this;
+        alert(input2.value);
+      }
+    }
+    ReactDOM.render(<Test />, document.getElementById('demo'));
+  </script>
+</body>
+
+</html>

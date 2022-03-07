@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>props属性的高级用法</title>
+
+</head>
+
+<body>
+  <div id="demo1"></div>
+  <div id="demo2"></div>
+  <div id="demo3"></div>
+  <div id="demo4"></div>
+
+
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    class Person extends React.Component {
+      render() {
+        const { name, age, sex } = this.props;
+        return (
+          <ul>
+            <li>姓名：{name}</li>
+            <li>性别：{sex}</li>
+            <li>年龄：{age}</li>
+          </ul>
+        )
+      }
+    }
+    // 还有一个问题：这么写，age的值就变成字符串了，而不是我们想要的number
+    ReactDOM.render(<Person name='Tom' age='20' sex='male' />, document.getElementById('demo1'));
+    ReactDOM.render(<Person name='Jackson' age='22' sex='male' />, document.getElementById('demo2'));
+
+    const obj = { name: 'Alice', age: 20, sex: 'female' };
+    ReactDOM.render(<Person name={obj.name} age={obj.age} sex={obj.sex} />, document.getElementById('demo3'));
+  /* 
+    语法糖：
+      注意：- 这里的{}表示其内部是js表达式，而原生js的{...obj}是深度复制一个对象的语法结构；
+          - 虽然原生js的对象没有展开语法，但是react+babel内部实现了这个用法 
+          - 要求obj中的key必须与li中引入的key相同。
+  */
+    ReactDOM.render(<Person {...obj} />, document.getElementById('demo4'));
+
+  </script>
+  <script type="text/javascript">
+    /* 原生js数组的展开语法 */
+    const arr1 = [1, 3, 5, 7, 9];
+    const arr2 = [2, 4, 6, 8, 10];
+    // 输出数组的每一项
+    console.log(...arr1);//1 3 5 7 9
+    // 会将两个数组合并
+    console.log([...arr1, ...arr2]);//[1, 3, 5, 7, 9, 2, 4, 6, 8, 10] 
+
+    // 数组提供的reduce方法可以快捷的进行数组求和！！！
+    let sum = arr1.reduce((pre, next) => {
+      return pre + next;
+    });
+    console.log(sum);//25
+
+    /* 原生js对象没有展开语法 */
+    const obj1 = { name: 'www', age: 22, gender: 'female' };
+    // console.log(...obj1);// 报错：对象没有遍历器，无法遍历
+
+    // 方便快速的深度复制一个对象！！！
+    const cloneObj1 = { ...obj1 };
+    obj1.name = 'wsy';//不会影响cloneObj1的值
+    console.log(cloneObj1);// {name: 'www', age: 22, gender: 'female'}
+
+    // 深度复制一个对象的同时，还可以更改其属性值（合并）
+    const obj2 = { ...obj1, gender: 'male' };
+    console.log(obj2);//{name: 'wsy', age: 22, gender: 'male'}
+  </script>
+</body>
+
+</html>

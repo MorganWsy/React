@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02.使用js创建虚拟DOM</title>
+  <!-- 
+    一般不用，通过jsx语法可以更简洁的完成同样的功能，当然babel将jsx转换为js后，
+    实际上就是使用js创建虚拟dom的方式，jsx只是语法糖而已。 
+  -->
+</head>
+<body>
+  <div id="test"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script>
+    // // 创建虚拟dom
+    // const VDOM = React.createElement('h1',{id: 'title'}, '你好');
+    // // 渲染虚拟dom
+    // ReactDOM.render(VDOM, document.getElementById('test'))
+
+    // 创建一个三层嵌套的html结构
+    const VDOM2 = React.createElement('h1',{id: 'title'}, React.createElement('span',{},'hello world'))
+    ReactDOM.render(VDOM2, document.getElementById('test'))
+
+  </script>
+</body>
+</html>

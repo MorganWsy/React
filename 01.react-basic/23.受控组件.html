@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>23.受控组件</title>
+
+</head>
+
+<body>
+  <div id="demo"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      受控组件：html中所有输入类的dom元素（checkbox，radio，input等），我们在定义这些元素的同时，通过事件获取他们的值，并将值存入state属性中。当我们需要数据时，就从state属性中取，这样就避免使用ref属性了。开发中推荐使用受控组件！！
+    */
+    class LogIn extends React.Component{
+      // 初始化状态（使用setState()方法设置状态之前，最好先初始化状态！！）
+      state = {
+        username: '',
+        password: ''
+      }
+      getUsernameHandler = (event) => {
+        this.setState({username: event.target.value});
+      }
+      getPasswordHandler = (event) => {
+        this.setState({password: event.target.value});
+      }
+      // 统一使用一个函数来获取表单数据
+      getFormDataHandler = (event) => {
+        // 前提是表单元素设置了name属性
+        this.setState({[event.target.name]: event.target.value});
+      }
+      loginHandler = (event) => {
+        // 阻止表单的默认行为
+        event.preventDefault();
+        const {username,password} = this.state;
+        alert(`用户名：${username}，密码：${password}`);
+      }
+      render(){
+        return (
+          <form action="#" onSubmit={this.loginHandler}>
+            <label htmlFor="username">用户名：</label>  
+            <input type="text" id='username' name='username' onChange={this.getFormDataHandler}/><br/>
+            <label htmlFor="password">密码：</label>
+            <input type="password" id='password' name='password' onChange={this.getPasswordHandler}/><br/>
+            <button>提交</button>
+          </form>
+        )
+      }
+    }
+    ReactDOM.render(<LogIn/>, document.getElementById('demo'));
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03.虚拟dom和真实dom的区别</title>
+  <!-- 
+    1.虚拟DOM就是一般的js对象（Object对象）；
+    2.虚拟DOM比较‘轻’，所包含的属性比真实DOM少的多；
+    3.虚拟DOM最终会被react转换为真实DOM，并渲染到页面上
+   -->
+</head>
+<body>
+  <div id="test"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type="text/babel">
+    const VDOM = <h2>虚拟DOM</h2>
+    const TDOM = document.getElementById('test')
+    ReactDOM.render(VDOM, document.getElementById('test'))
+    console.log('虚拟DOM:', VDOM);
+    console.log('真实DOM:', TDOM);
+    debugger;
+  </script>
+
+</body>
+</html>

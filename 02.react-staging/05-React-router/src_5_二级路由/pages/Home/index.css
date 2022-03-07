@@ -1,0 +1,13 @@
+ul{
+  list-style: none;
+}
+
+.home-main{
+  border-bottom: 2px solid #eee;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.home-nav-list{
+  margin: 2rem 0;
+}

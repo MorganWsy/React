@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>组件实例对象的三大属性之一的props属性</title>
+
+</head>
+<body>
+  <div id="demo1"></div>
+  <div id="demo2"></div>
+  <div id="demo3"></div>
+
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    class Person extends React.Component{
+      // state = {name: 'Tom',age: 20, sex: 'male'}
+      render(){
+        const {name, age, sex } = this.props;
+        return (
+          <ul>
+            <li>姓名：{name}</li>
+            <li>性别：{sex}</li>
+            <li>年龄：{age}</li>  
+          </ul>
+        )
+      }
+    }
+    /* - state属性是用初始化的数据去渲染组件，如果同时渲染多个Person，ul的内容都会是相同的;
+      - 在Person标签中添加标签属性，react会帮我们将这些标签属性添加到new出来的组件实例对象的props属性中，然后我们就可以动态渲染页面了。
+      - 注意：props属性是只读的，不要在组件内部修改它。
+    */
+    ReactDOM.render(<Person name='Tom' age='20' sex='male'/>, document.getElementById('demo1'));
+    ReactDOM.render(<Person name='Jackson' age='22' sex='male'/>, document.getElementById('demo2'));
+    ReactDOM.render(<Person name='Alice' age='20' sex='female'/>, document.getElementById('demo3'));
+
+  </script>
+</body>
+</html>

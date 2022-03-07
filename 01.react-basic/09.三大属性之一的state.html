@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>09.类式组件实例对象的三大属性</title>
+  <!-- 
+    三大属性：state、refs、props
+    注意：只有类式组件有这三大属性，因为函数式组件没有this，也没有实例对象，更不用说实例对象上的这三个属性了。
+    1、在类式组件中使用了constructor构造函数，就必须调用super()方法，不然会报错。而super()方法继承的props属性是react规定的。
+    2、组件实例对象上默认有个state属性，用来存储组件的状态（也就是数据），状态改变则驱动页面的改变。
+    3、React的事件一般是直接在html标签中绑定的，且事件名称和原生js不同，如：react是onClick={fn}，而js是onclick='fn()'，
+      在React中，html标签中绑定的函数不需要调用。
+   -->
+</head>
+<body>
+  <div id="demo"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    // 创建组件
+    class Weather extends React.Component{
+      // constructor构造函数会调用几次？  1次
+      constructor(props){
+        super(props);
+        // 初始化状态
+        this.state = {
+          isHot: false,
+          wind: '微风'
+        }
+        /* 解决组件实例对象的原型对象上的toggleWeather方法的this指向问题：
+          - bind(this)会生成一个toggleWeather方法的副本，并将这个副本的this改为指向组件实例对象。
+          - toggleWeather方法的副本是位于组件实例对象上的，而toggleWeather方法是位于组件实例对象的原型对象上的！！！
+          - toggleWeather方法的副本，名称可以任意更改，注意：onClick事件绑定的是副本
+        */
+        this.toggleWeather = this.toggleWeather.bind(this);
+      }
+      // render方法调用几次？ 1+n 次  1表示初始化那次，n表示你点多少次就重新渲染多少次
+      render(){
+        const {isHot, wind} = this.state;
+        return <h2 onClick={this.toggleWeather}>今天天气很{isHot ? '炎热' : '寒冷'}，有{wind}</h2>
+      }
+      // toggleWeather方法调用多少次？ n次  你点多少次就调用多少次
+      toggleWeather(){
+        // 1、因为toggleWeather方法是直接作为onClick事件的回调函数去调用的，是直接调用，而不是通过组件实例对象调用的；
+        // 2、类中的方法其内部默认会开启严格模式（即局部严格模式），所以this并不是指向windows，而是undefined。
+        // undefined
+        // console.log(this);
+
+        let isHot = this.state.isHot;
+        // React.Component类上有setState()方法，专门用来更新组件实例对象的state属性的值（这也是state是三大属性之一的原因）
+        // 且更新是合并，不是替换（即传什么就修改什么）
+        this.setState({isHot: !isHot});
+
+        // 这样直接修改是不对的，react不允许这么做
+        // this.state.isHot = !isHot;
+      }
+    }
+    ReactDOM.render(<Weather/>, document.getElementById('demo'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+ul{
+  list-style: none;
+}
+
+.home-main{
+  border-bottom: 2px solid #eee;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.home-nav-list{
+  margin: 2rem 0;
+}
+
+.message-nav-list{
+  float: left;
+  border-right: 2px solid #eee;
+}
+.message-nav-list > li{
+  padding: 1rem;
+}
+.message-nav-list > li:hover{
+  background-color: #82c4a0;
+  color: #fff;
+}
+.message-nav-list > li > a{
+  text-decoration: none;
+  color: #333;
+}
+
+.message-nav-list > li > button{
+  margin: 0 0.5rem;
+  cursor: pointer;
+}
+
+.message-detail{
+  float: right;
+  /* margin-right: 6rem; */
+}
+.message-detail > li{
+  padding: 1rem;
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>15.类式组件的构造器与props</title>
+
+</head>
+
+<body>
+  <div id="demo1"></div>
+
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <!-- 引入PropTypes对象 -->
+  <script src='../js/prop-types.js'></script>
+  <script type='text/babel'>
+    class Person extends React.Component {
+      // 如果想要在构造器中获得this.props的值，则必须接props属性，并传入super()方法中，否则this.props可能是undefined
+      // 其实props属性的值就等于this.props的值，所以在开发中基本不写构造器，更不会接props和传props
+      constructor(props){
+        super(props);
+        console.log(this.props);
+        console.log(props);
+      }
+      static propTypes = {
+        name: PropTypes.string.isRequired,
+        age: PropTypes.number,
+        sex: PropTypes.string
+      }
+      static defaultProps = {
+        age: 18,
+        sex: 'male'
+      }
+      render() {
+        const { name, age, sex } = this.props;
+        return (
+          <ul>
+            <li>姓名：{name}</li>
+            <li>性别：{sex}</li>
+            <li>年龄：{age}</li>
+          </ul>
+        )
+      }
+      
+    }
+    ReactDOM.render(<Person name='Tom' sex='male' />, document.getElementById('demo1'));
+
+  </script>
+</body>
+
+</html>

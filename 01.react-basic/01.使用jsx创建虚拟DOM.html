@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1.使用jsx语法创建虚拟DOM</title>
+</head>
+<body>
+  <div id="test"></div>
+  <!-- 这是react核心库，必须首先引入 (全局多了React对象)-->
+  <script src='../js/react.development.js'></script>
+  <!-- 这是react虚拟dom库，支持react操作dom（全局多了ReactDOM对象）-->
+  <script src='../js/react-dom.development.js'></script>
+  <!-- 这是将jsx语法转换为js的库 -->
+  <script src='../js/babel.min.js'></script>
+  <!-- type必须是text/babel -->
+  <script type="text/babel">
+    // // 创建虚拟dom（这是jsx语法，不要加引号）
+    // const VDOM = <h2>hello world!</h2>
+    // const VDOM2 = <span>你好</span>
+    // // 将虚拟dom渲染到页面上
+    // ReactDOM.render(VDOM, document.getElementById('test'));
+    // // 会覆盖上面那行
+    // ReactDOM.render(VDOM2, document.getElementById('test'))
+
+    /* ()表示代码是一个整体，在里面可以缩进。创建一个三层嵌套的html结构（jsx语法） */
+    const VDOM3 = (
+      <h2>
+        <span>hello world</span>  
+      </h2>
+    );
+    ReactDOM.render(VDOM3, document.getElementById('test'));
+  </script>
+</body>
+</html>

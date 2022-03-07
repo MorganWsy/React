@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>30.验证diffing算法</title>
+
+</head>
+<body>
+  <div id="demo"></div>
+  <script src='../js/17.0.1/react.development.js'></script>
+  <script src='../js/17.0.1/react-dom.development.js'></script>
+  <script src='../js/17.0.1/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      diffing算法：最小粒度是节点（好像包括文本节点）。
+        - 当state变化时，react会根据新数据生成新的虚拟dom！！react将新的dom和旧的dom进行对比，将变化了的节点重新渲染。
+    */
+    class Clock extends React.Component{
+      state = {time: new Date()}
+
+      componentDidMount(){
+        setInterval(() => {
+          this.setState({time: new Date()})
+        }, 1000);
+      }
+      render(){
+        return (
+          <div>
+            <h2>验证diffing算法</h2>  
+            <input type="text" placeholder='输入内容，看内容是否变化'/><br/>
+            <span>
+              现在是：{this.state.time.toTimeString()}
+              <input type="text" />
+            </span>
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(<Clock/>, document.getElementById('demo'));
+  </script>
+</body>
+</html>

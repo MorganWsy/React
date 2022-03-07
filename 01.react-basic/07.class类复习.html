@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>class类复习</title>
+  <!-- 
+
+   -->
+</head>
+<body>
+  <script>
+    // 定义一个Person类
+    class Person{
+      constructor(name, age){
+        this.name = name;
+        this.age = age;
+      }
+      speak(){
+        console.log(`我叫${this.name}，我今年${this.age}岁`);
+      }
+    }
+    const p1 = new Person('小王',17);
+    const p2 = new Person('小蓝', 16);
+
+    /* 定义一个Student类，继承Person类.
+        - 如果在Student类中不定义constructor，Student类的实例对象同样有name、age属性，以及speak()方法；
+        - speak()方法存在于Person类的原型上，供person类的实例和student的实例调用；
+        - 如果需要为student类定义除name、age之外的属性，则必须在student类的constructor中的最前面调用super()方法；
+    */
+    class Student extends Person{
+      constructor(name, age, grade){
+        // 表示继承Person类的name、age属性（必须放在最前面）
+        super(name,age);
+        // Student类自己的属性
+        this.grade = grade;
+      }
+      // 重写父类的同名方法(不重写的话，student的实例对象能使用父类的speak方法)
+      speak(){
+        console.log(`我叫${this.name}，我今年${this.age}岁，读${this.grade}`);
+      }
+    }
+    const stu1 = new Student('小明',10,"高一");
+    console.log(stu1);
+    stu1.speak();
+  </script>
+</body>
+</html>

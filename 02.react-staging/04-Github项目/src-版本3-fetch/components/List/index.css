@@ -1,0 +1,39 @@
+/* ul——所有li元素的容器 */
+.list-wrapper{
+  width: 100%;
+  height: 60%;
+  margin-top: 1rem;
+  display: flex;
+  flex-flow: row wrap;
+}
+/* 每个li */
+.list-item{
+  position: relative;
+  width: 15rem;
+  height: 15rem;
+  list-style: none;
+  border: 1px solid #ddd;
+}
+/* 设置头像和昵称的位置 */
+a{
+  position: absolute;
+  width: 10rem;
+  height: 12rem;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  text-decoration: none;
+  color: #333;
+}
+/* 设置头像的大小 */
+.avatar{
+  width: 100%;
+}
+/* 设置名称 */
+.nickname{
+  display: block;
+  font-size: 14px;
+  text-align: center;
+}

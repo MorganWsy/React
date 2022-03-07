@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>27.生命周期函数(old)</title>
+</head>
+
+<body>
+  <div id="demo"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      最常用的生命周期函数：
+        - componentDidMount(): 一般在组件初始化完毕后做一些事情。如：开启定时器、开启动画、订阅消息、发送网络请求...
+        - componentWillUnmount(): 一般在组件将要卸载时做一些时期。如：关闭定时器、关闭动画、取消订阅...
+        - render()
+    */
+    class Count extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { count: 0 };
+        console.log('Count-----constructor()');
+      }
+
+      componentWillMount() {
+        console.log('Count-----componentWillMount()');
+      }
+
+      componentDidMount() {
+        console.log('Count-----componentDidMount()');
+      }
+      // 控制组件是否应该更新的阀门（不写这个函数，react会默认执行，且返回true；如果写了这个函数，一定要return true or false）
+      shouldComponentUpdate() {
+        console.log('Count-----shouldComponentUpdate()');
+        return true;
+      }
+      // 组件将要更新（更新之前）
+      componentWillUpdate() {
+        console.log('Count-----componentWillUpdate()');
+      }
+      // 组件更新之后
+      componentDidUpdate() {
+        console.log('Count-----componentDidUpdate()');
+      }
+      add = () => {
+        let { count } = this.state;
+        count++;
+        this.setState({ count });
+        // 这么写没用？！
+        // this.setState({count: count++});
+      }
+      // 在不改变组件状态的情况下，强制更新组件
+      force = () => {
+        this.forceUpdate();
+        console.log('Count-----强制更新了');
+      }
+      render() {
+        console.log('Count-----render()');
+        const { count } = this.state;
+        return (
+          <div>
+            <h2>当前计数为：{count}</h2>
+            <button onClick={this.add}>+1</button>
+            <button onClick={this.force}>强制更新</button>
+          </div>
+        )
+      }
+    }
+    // ReactDOM.render(<Count/>, document.getElementById('demo'));
+
+    /* 
+      - 父组件渲染路线：
+      - 实现的功能：
+        1、组件B继承组件A；
+        2、点击组件A的按钮，改变组件B的内容；
+    */
+    //  父组件A
+    class A extends React.Component {
+      state = { car: '奔驰' }
+
+      changeCar = () => {
+        if (this.state.car === '奔驰') {
+          this.setState({ car: '宝马' });
+        } else {
+          this.setState({ car: '奔驰' });
+        }
+      }
+      render() {
+        return (
+          <div>
+            <h2>我是A组件</h2>
+            <button onClick={this.changeCar}>换车</button><br />
+            <B car={this.state.car} />
+          </div>
+        )
+      }
+    }
+    // 子组件B
+    class B extends React.Component {
+      componentWillMount() {
+        console.log('B-----componentWillMount()');
+      }
+      componentDidMount() {
+        console.log('B-----componentDidMount()');
+      }
+      /* 注意：这个方法只会在组件更新时被调用，组件挂载时不会被调用！！！ */
+      componentWillReceiveProps() {
+        console.log('B-----componentWillReceiveProps()');
+      }
+      shouldComponentUpdate() {
+        console.log('B-----shouldComponentUpdate()');
+        return true;
+      }
+      componentWillUpdate() {
+        console.log('B-----componentWillUpdate()');
+      }
+      componentDidUpdate() {
+        console.log('B-----componentDidUpdate()');
+      }
+      render() {
+        console.log('B-----render()');
+        return <h2>现在的车型是：{this.props.car}</h2>
+      }
+    }
+    ReactDOM.render(<A />, document.getElementById('demo'));
+  </script>
+</body>
+
+</html>

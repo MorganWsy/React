@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04.jsx语法规则</title>
+  <!-- 
+    1.定义虚拟DOM时，不用加引号，当虚拟DOM有多层结构时，可以将内容用()包裹起来。
+    2.在虚拟DOM中引入js表达式时，必须写在{}内，否则达不到想要的效果。
+    3.在虚拟DOM中写内联样式时，必须写在{{}}内，第一层{}表示这是个js表达式，第二层{}表示这个js表达式的内容是js对象。
+      如：style={{color: '#fff',fontSize: '14px'}}
+      (1)对象是键值对的形式；
+      (2)多个单词组成的样式需要写成小驼峰形式；
+      (3)值需要用引号括起来。
+    4.样式的类名必须写成className，而不是class（因为es6中class是关键字），在虚拟DOM中引入：className='类名'
+    5.虚拟DOM只能有一个根元素，否则会报错。
+    6.标签必须闭合，自结束标签也需要。
+    7.标签首字母大小写问题：
+      (1)如果在虚拟DOM中写了html5不包含的标签（全小写），同样能在浏览器显示，但会报错;
+      (2)如果写了首字母大写的标签，则react会认为它是react组件，如果代码中没有定义该组件，则会报错。
+      
+   -->
+   <style>
+     .title{
+       width: 200px;
+       background-color: seagreen;
+     }
+   </style>
+</head>
+
+<body>
+  <div id="test"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type="text/babel">
+    const myID = 'dEmO';
+    const content = 'hello,React';
+    
+    const VDOM = (
+      <div>
+        <h2 id={myID.toLowerCase()} style={{color: '#fff',backgroundColor: 'orange'}}>
+          <span>{content}</span>
+        </h2>
+        <h2 id={myID.toUpperCase()} className='title'>
+          <span>{content+'!!!'}</span>
+        </h2>
+        <input type="text" placeholder='请输入'/>
+        // 报错:html5没有这个标签
+        <student>我是student标签</student>
+        // 报错:没有定义Student组件
+        <Student>我是Student组件</Student>
+      </div>
+
+    );
+    ReactDOM.render(VDOM, document.getElementById('test'));
+  </script>
+</body>
+
+</html>

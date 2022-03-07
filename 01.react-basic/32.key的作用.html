@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>32.key的作用</title>
+
+</head>
+<body>
+    <div id="demo"></div>
+  <script src='../js/17.0.1/react.development.js'></script>
+  <script src='../js/17.0.1/react-dom.development.js'></script>
+  <script src='../js/17.0.1/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+    经典面试题：
+      1、react、vue中的key有什么作用？（key的内部原理是什么？）
+      2、为什么遍历列表时，key最好不要用数组的index？
+
+      1、虚拟dom中key的作用：
+        - 简单来说：key是虚拟dom的标识，在更新虚拟dom时起着极其重要的作用。
+        - 详细来说：当状态中的数据发生变化时，react会根据新数据生成新的虚拟dom，随后react将旧的虚拟dom和新的虚拟dom进行比较：
+          - 旧的虚拟dom中有和新的虚拟dom相同的key：
+            - 若虚拟dom的内容没有变，则直接使用之前生成的真实dom，而不再将新的虚拟dom渲染成真实dom。
+            - 若虚拟dom的内容变了，则根据新的虚拟dom生成新的真实dom，然后替换掉页面中已存在的真实dom。
+          - 旧的虚拟dom中没有和新的虚拟dom相同的key：
+            - 根据新的虚拟dom生成真实dom，然后渲染到页面上。
+      2、用数组的index作为key可能的问题：
+        - 当对数据进行逆序添加、逆序删除等破坏数组顺序的操作时，会产生没必要的真实dom更新，虽然显示效果没问题，但是效率很低！！
+          - 当html结构中还包含输入类的dom时（checkbox、radio、input等），会造成错误的dom更新，这不仅效率低，还导致页面有问题。
+      3、开发中选择什么作为key？
+        - 最好使用每条数据的唯一表示作为key，如id、手机号、身份证号、学号等。
+        - 如果组件的功能只是简单地展示数据，不存在逆序添加、逆序删除等操作，用index作为key也是没问题的。
+    */
+
+    class Person extends React.Component{
+      state = {
+        persons:[
+          {id: 1, name: '小王', age: 20},
+          {id: 2, name: '小白', age: 19}
+        ]
+      }
+
+      addPerson = () => {
+        const {persons} = this.state;
+        const newPer = {id: persons.length+1, name: '小李', age:22};
+        this.setState({persons: [newPer, ...persons]});
+      }
+
+      render(){
+        return (
+          <div>
+            <h2>演示不同key的作用</h2>
+            <button onClick={this.addPerson}>添加一条数据</button>
+            <h3>数组的index作为key</h3>
+            <ul>
+              {
+                this.state.persons.map((item,index) => {
+                  return (
+                    <li key={index}>我是{item.name}，今年{item.age}岁
+                      <input type="text"/>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+            <hr/>
+            <h3>数据的id作为key</h3>
+            <ul>
+              {
+                this.state.persons.map((item,index) => {
+                  return (
+                    <li key={item.id}>我是{item.name}，今年{item.age}岁
+                      <input type="text"/>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(<Person/>, document.getElementById('demo'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>对props的限制</title>
+
+</head>
+
+<body>
+  <div id="demo1"></div>
+  <div id="demo2"></div>
+  <div id="demo3"></div>
+  <div id="demo4"></div>
+
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <!-- 引入PropTypes对象 -->
+  <script src='../js/prop-types.js'></script>
+  <script type='text/babel'>
+    class Person extends React.Component {
+      render() {
+        console.log(this);
+        const { name, age, sex } = this.props;
+        return (
+          <ul>
+            <li>姓名：{name}</li>
+            <li>性别：{sex}</li>
+            <li>年龄：{age}</li>
+          </ul>
+        )
+      }
+    }
+    /* - 对标签的props属性的类型进行限制。propTypes是固定名称，不可更改！！！ 
+      - 在react15.x版本中，PropTypes位于React对象上（如：React.PropTypes.string)，在16.x版本及后版本，PropTypes对象被提取为单独的js文件（即prop-types.js文件），对象的名称也是固定的，注意和propTypes区分！！！
+    */
+    Person.propTypes = {
+      // 表示Person类必须有name属性，且其类型为string
+      name: PropTypes.string.isRequired,
+      // 表示Person类的age属性是number类型
+      age: PropTypes.number,
+      // 同上
+      sex: PropTypes.string
+    }
+    // 为标签的props属性添加默认值
+    Person.defaultProps = {
+      // age属性的默认值是18
+      age: 18,
+      sex: 'male'
+    }
+    ReactDOM.render(<Person name='Tom' sex='male' />, document.getElementById('demo1'));
+    ReactDOM.render(<Person name='Jackson' age={22} sex='male' />, document.getElementById('demo2'));
+
+    const obj = { name: 'Alice', age: 20, sex: 'female' };
+    ReactDOM.render(<Person name={obj.name} age={obj.age} sex={obj.sex} />, document.getElementById('demo3'));
+    ReactDOM.render(<Person {...obj} />, document.getElementById('demo4'));
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20.createRef()形式的ref</title>
+</head>
+
+<body>
+  <div id="demo"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      - 使用React.createRef()方法会创建一个保存ref属性所处的dom元素的容器（即myRef1是一个容器），则我们可以通过实例对象来获取dom元素；
+      - 注意：这个方法所创建的容器是“专人专用的”，也就是只能保存一个dom元素，所以想为其他标签添加ref时，需要在再创建容器；
+    */
+    class Test extends React.Component {
+      myRef1 = React.createRef()
+      myRef2 = React.createRef()
+      render() {
+        console.log(this);
+        return (
+          <div>
+            <input ref={this.myRef1} type='text' placeholder='请输入内容' style={{ marginRight: '5px' }} />
+            <button onClick={this.showData}>提示左侧输入的内容</button>
+            <input ref={this.myRef2} onBlur={this.showData2} type="text" placeholder='失去焦点后提示输入的内容' style={{ marginLeft: '5px' }} />
+          </div>
+        )
+      }
+      // 自定义方法
+      showData = () => {
+        // console.log(this.myRef1);//{current: input}
+        alert(this.myRef1.current.value);
+      }
+      showData2 = () => {
+        alert(this.myRef2.current.value);
+      }
+    }
+    ReactDOM.render(<Test />, document.getElementById('demo'));
+  </script>
+</body>
+
+</html>

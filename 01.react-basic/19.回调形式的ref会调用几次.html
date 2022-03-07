@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>19.回调形式的ref会调用几次</title>
+</head>
+
+<body>
+  <div id="demo"></div>
+  <script src='../js/react.development.js'></script>
+  <script src='../js/react-dom.development.js'></script>
+  <script src='../js/babel.min.js'></script>
+  <script type='text/babel'>
+    /* 
+      - 直接在标签的ref属性中传递回调函数，这是内联的写法，它会有一个问题：初始化后，再调用render方法更新组件时，回调函数会调用两次（第一次react传入的参数是null，第二次传入的参数才是dom元素），官网有说明，虽然这个问题无关紧要（开发时用内联的回调函数多）
+      - 将回调函数抠出来，作为组件实例对象的方法，就能避免这个问题。
+    */
+    class Test extends React.Component {
+      render() {
+        return (
+          <div>
+            <input ref={this.getInputDOM} type='text' placeholder='请输入内容' style={{ marginRight: '5px' }} />
+            <button onClick={this.showData}>提示左侧输入的内容</button> 
+
+          {/*<input ref={(dom) => {this.input2 = dom}} onBlur={this.showData2} type="text" placeholder='失去焦点后提示输入的内容' style={{ marginLeft: '5px' }} />*/}
+          </div>
+        )
+      }
+      getInputDOM = (dom) => {
+        console.log(dom);
+        this.input1 = dom;
+      }
+      // 自定义方法
+      showData = () => {
+        const {input1} = this;
+        alert(input1.value);
+      }
+      showData2 = () => {
+        const { input2 } = this;
+        alert(input2.value);
+      }
+    }
+    ReactDOM.render(<Test />, document.getElementById('demo'));
+  </script>
+</body>
+
+</html>

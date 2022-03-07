@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- 创建理想视口，用于移动端网页的适配 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 设置浏览器标签页和地址栏的颜色（兼容性不好，且只能用于android应用） -->
+    <meta name="theme-color" content="#000000" />
+    <!-- 用于描述网页（主要是给搜索引擎看的） -->
+    <meta name="description" content="Web site created using create-react-app"/>
+
+    <!-- %PUBLIC_URL% 是react脚手架定义的关键字，表示项目的public文件夹的绝对路径 -->
+   <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
+   <!-- 
+    当在项目中引入UI库时，以相对路径引入可能会出现问题（当网页地址是多级路由且刷新页面后，导致引入的UI库样式丢失的问题）。
+      1.我们可以将'./css/'中的.去掉，来解决这个问题；
+      2.可以使用react脚手架定义的 %PUBLIC_URL% ，以绝对路径引入UI库；
+      3.可以将react项目的<BrowerRouter>路由器换成<HashRouter>路由器。（用的较少）
+    -->
+   <!-- <link rel="stylesheet" href="./css/bootstrap.min.css"> -->
+   <!-- <link rel="stylesheet" href="/css/bootstrap.min.css"> -->
+   <!-- <link rel="stylesheet" href="%PUBLIC_URL%/css/bootstrap.min.css"> -->
+   
+    <!-- 将一个网站添加到手机桌面，作为app使用时app的图标（只适用于苹果手机，兼容性也不好） -->
+    <!-- <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" /> -->
+    <!-- 给网页套壳时需要配置的权限文件（套壳是指在html文件外面套一层东西，可以生成.apk文件，就可以将网页作为app使用了 -->
+    <!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json" /> -->
+    <title>react-study</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
