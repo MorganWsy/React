@@ -97,10 +97,15 @@ store.subscribe(() => {
 ## 6. redux 的异步 action
 
 - **同步 action**：js 中的普通对象；
+
 - **异步 action**：函数；
+
 - store 只会将普通对象交给 reducer 进行加工，所以如果是异步 action，**需要依赖 redux-thunk 中间件**，通过中间件告诉 store 传入的是异步 action，让 store 帮我们调用这个函数，而在这个函数内部执行异步任务（通过定时器或者发送 ajax 请求，将同步 action 给 reducer 进行加工）
+
 - **异步 action 不是必须的，完全可以在组件自身中通过定时器或发送 ajax 请求到达异步 action 的效果。**
+
 - 中间件用法：
+  
   - 在 store.js 文件中引入 _redux-thunk_。
     
     ```jsx
@@ -112,6 +117,7 @@ store.subscribe(() => {
     // 使用中间件
     export default createStore(CountReducer, applyMiddleware(thunk));
     ```
+  
   - 创建异步 action：
     
     ```jsx
@@ -180,19 +186,146 @@ store.subscribe(() => {
 2. 分别实现 mapStateToProps 函数和 mapDispatchToProps 函数或对象。
 
 3. 使用了 react-redux 就不需要再使用 store.subscribe(()=>{}) 来监测 redux 的状态是否改变了，因为react-redux实现了父组件与子组件通信（**父组件给子组件传递props，只要props属性发送变化，就会重新渲染子组件**）
+
+## 4. 求和案例中 react-redux 优化
+
+1. 容器组件和UI组件写在一个文件中。如：`containers/Count/index.jsx`
+
+2. 无需自己给每个容器组件都传入 store 对象，用`<Provider store={store}></Provider>`包裹`<App/>` 组件即可，App 组件中的所有容器组件都能接收到 store 对象。
    
-   > **优化：** 如果App中有多个容器组件，每个容器组件都需要 store 对象，则给每个容器组件手动传入 store 对象很麻烦，可以借助 react-redux 提供的 Provider 组件，用该组件包裹 App 组件，且向该组件传入 store 对象，则 App 中的所有容器组件都能接收到 store 对象。
+   ```jsx
+   // index.js
+   import {Provider} from 'react-redux';
+   import store from './redux/store';
+   ReactDOM.render(
+       <Provider store={store}>
+           <App/>
+       </Provider>,
+       document.getElementById("root")
+   );
+   ```
+
+3. 使用 react-redux 后，不需要自己去监测 redux 中状态的改变了，容器组件可以帮助我们完成这个工作。
+
+4. mapDispatchToProps 也可以是个对象。
+
+5. 一个组件要和 redux 通信，要经过哪几步？
+   
+   1. 先定义好UI组件，不向外暴露。
+   
+   2. 引入 connect 函数，传入UI组件，生成一个容器组件，向外暴露。
+   
+   3. 在UI组件中通过`this.props.xxx` 读取和操作 redux 中的状态。
+
+## 5. 完成两个组件之间数据的共享
+
+1. 下载 nanoid 库：`yarn add nanoid`，用于生成用户的 id
+
+2. 编写 Person 组件的 `reducers/person.js` 和 `actions/person.js` 。
+
+3. 在 `store.js` 文件中引入 **combineReducers 函数（接收1个对象）**，将 Person 组件的 reducer 和 Count组件的 reducer 作为参数对象的属性传入。
+   
+   ```jsx
+   import {combineReducers} from 'redux';
+   // 现在redux管理的是combineReducers函数的参数对象
+   const allReducers = combineReducers({
+       count: CountReducer,
+       persons: PersonReducer
+   });
+   export default createStore(allReducers, applyMiddleware(thunk));
+   ```
+
+4. 修改 `containers/Count/index.jsx` 中的 mapStateToProps 和 mapDispatchToProps 函数。
+   
+   ```jsx
+   // 此时接收的state是redux管理的状态对象（即combineReducers函数的参数）。
+   // state包含Count组件和Person组件的状态，所以可以将Person组件的状态
+   // 作为 Count的UI组件的props属性，实现两个组件的状态的共享
+   const mapStateToProps = (state) => ({count: state.count,persons: state.persons});
+   const mapDispatchToProps = (dispatch) => {
+     return {
+       increment: (value) => {dispatch(createIncreAction(value))},
+       decrement: (value) => {dispatch(createDecreAction(value))},
+       incrementAsync: (value, delayTime) => {dispatch(createIncreAsyncAction(value,delayTime))}
+     }
+   }
+   ```
+
+5. **注意：redux 中的 reducer 函数必须是一个纯函数**。
+   
+   ```jsx
+   const initialState = [{id: '1', name: 'www', age: 18}];
+   export default function PersonReducer(prevState=initialState,action){
+     const {type,data} = action;
+     switch (type) {
+       case ADD_PERSON:
+         //错误
+         //preState.unshift(data);
+         //return preState;
+         //返回一个新数组
+         return [...prevState,data];    
+       default:
+         return prevState;
+     }
+   }
+   ```
+   
+   >        通过push、unshift方法向preState中添加内容，这样只是改变了原数组preState的内容，其在内存中的地址并没有变，**react-redux 会使用 diff 算法比较返回值与 preState 在内存中的地址是否一致，如果不一致则会更新 状态**；如果一致，则不改变状态，所以这就是使用unshift、push等方法不会有效果的原因。
    > 
-   > ```jsx
-   > // index.js
-   > import {Provider} from 'react-redux';
-   > import store from './redux/store';
-   > ReactDOM.render(
-   >     <Provider store={store}>
-   >         <App/>
-   >     </Provider>,
-   >     document.getElementById("root")
-   > );
-   > ```
+   >         正如 redux 原理图中所示，reducer 必须返回一个新state，这个新是相对于preState来讲的，它们的地址不应该是相同的。
 
+## 6. react-redux 开发者工具
 
+1. 在 chrome 应用商店下载插件：`Redux DevTools` 插件。
+
+2. 在项目中下载：`yarn add redux-devtools-extension`
+
+3. 在 `store.js` 文件中进行包的配置，否则在页面上不能使用这个插件。
+   
+   ```jsx
+   import {composeWithDevTools} from 'redux-devtools-extension';
+   // 注意包的用法
+   const store = createStore(allReducers, composeWithDevTools(applyMiddleware(thunk)));
+   export default store;
+   ```
+
+4. 使用截图
+   
+   <img src="file:///E:/frontend/Git/笔记/redux开发者工具的使用.png" title="" alt="redux开发者工具的使用" width="339">
+
+# 纯函数
+
+1. 纯函数是一类特别的函数：**<u>多次调用同一个函数，传入相同的参数，必定得到相同的输出</u>**。
+
+2. 纯函数必须遵守的一些约束：
+   
+   - **不得改写参数**。即不能在函数内部改变参数的值。
+   
+   - **函数体不能产生任何副作用**。即不能在函数内部做网络请求、连接输入输出设备等（因为做网络请求不一定会成功）
+   
+   - **不能在函数内部调用`Date.now()` 或 `Math.random()` 等产生的值具有随机性的方法**。
+
+3. redux 中的 reducer 函数必须是一个纯函数。
+   
+   ```js
+   // 非纯函数举例：
+   function fn1(a){
+      //每次调用fn1(1)，都会得到不同的返回值
+      return a + Math.random()
+   }
+   // 调用fn2(1)，函数内部改变了参数a的值
+   function fn2(a){
+       a = {name: 'www'}
+       return a;
+   }
+   ```
+
+# 项目打包
+
+1. `yarn build` 打包项目，会在项目目录下生成一个`build`文件夹。
+
+2. 将打包好的文件部署到云服务器上，需要下载 `serve`包：`npm i -g serve`（我已全局安装，不知道为什么用 yarn 全局安装包不起作用）
+
+3. 在项目目录下，输入`serve -s build` 或  `serve build`  启动云服务器。
+
+4. 启动成功后，打开相应url，浏览器中的 react 开发者工具插件会亮。

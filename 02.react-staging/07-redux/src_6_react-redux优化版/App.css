@@ -17,16 +17,3 @@ html,body{
 .count-btn{
   margin: 0 0.5rem;
 }
-
-/* Person组件 */
-.usernameInput{
-  margin-bottom: .5rem;
-  width: 50%;
-}
-.ageInput{
-  margin-bottom: .5rem;
-  width: 50%;
-}
-.userBtn{
-  margin-left: 2rem;
-}
