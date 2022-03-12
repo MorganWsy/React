@@ -1,0 +1,18 @@
+.parent{
+	width: 500px;
+	background-color: orange;
+	padding: 16px;
+  box-sizing: border-box;
+}
+.child{
+	width: 100%;
+	background-color: skyblue;
+	padding: 16px;
+  box-sizing: border-box;
+}
+.descendant{
+	width: 100%;
+	background-color: gray;
+	padding: 16px;  
+  box-sizing: border-box;
+}

@@ -1,13 +1,12 @@
 import React from 'react';
-import {useRoutes} from 'react-router-dom';
+import {Routes, Route, Navigate} from 'react-router-dom';
 import Header from './components/Header';
 import MyNavLink from './components/MyNavLink';
-import {routesTable} from './routes/index';//引入自定义的路由表
+import Home from './pages/Home';
+import About from './pages/About';
 import './App.css';
 
 export default function App() {
-  // 使用useRoutes函数，根据路由表，自动生成路由
-  const element = useRoutes(routesTable);
   return (
     <div id='wrapper'>
       <Header />
@@ -20,8 +19,12 @@ export default function App() {
         </div>
         <div className="main-right">
           <div className="main-right-content">
-            {/* 使用路由表自动生成的路由 */}
-            {element}
+            <Routes>
+              <Route path='/home' element={<Home/>} />
+              <Route path='/about' element={<About/>} />
+              {/* 5.x版本的Redirect组件已经被Navigate组件替代了。只要匹配到'/'，就自动跳到Navigate指定的路由组件 */}
+              <Route path='/' element={<Navigate to='/home'/>}/>
+            </Routes>
           </div>
         </div>
       </div>
