@@ -59,7 +59,7 @@
 
 5. 当URL发生变化时，`<Routes> `都会查看其所有子`<Route>` 元素以找到最佳匹配并呈现组件，**匹配成功后不会再继续向下匹配**。
 
-6. `<Route>` 也可以嵌套使用，且可配合`useRoutes()`配置 “路由表”，但需要通过 `<Outlet>` 组件来渲染其子路由。
+6. `<Route>` **也可以嵌套使用**，还可以配合`useRoutes()`配置 “路由表”，两个用法都需要通过 `<Outlet>` 组件在你想放置的位置来渲染其子路由。
 
 7. 示例代码：
    
@@ -135,11 +135,13 @@
 
 1. 作用：只要`<Navigate>`组件被渲染，就会修改路径，切换视图。
 
-2. `replace`属性用于**控制跳转模式**（push 或 replace，默认是push）。
+2. <mark style='background-color:#fedc5e'>非常重要！</mark>
+
+3. `replace`属性用于**控制跳转模式**（push 或 replace，默认是push）。
    
    > `<Navigate to='/home' replace={true}/>`
 
-3. 示例代码：
+4. 示例代码：
    
    ```jsx
    import React,{useState} from 'react'
@@ -273,27 +275,45 @@
 
 1. 作用：返回一个函数用来实现编程式导航。
 
-2. 示例代码：
+2. <mark>非常重要！</mark>
+
+3. 与 react-router-dom 5.x版本不同的是6.x版本不区分路由组件和普通组件。即在普通组件中也能使用`useNavigate()`。
+
+4. 示例代码：
    
    ```jsx
    import React from 'react'
    import {useNavigate} from 'react-router-dom'
+   import {Button} from 'antd'
    
-   export default function Demo() {
-     const navigate = useNavigate()
-     const handle = () => {
-       //第一种使用方式：指定具体的路径
-       navigate('/login', {
-         replace: false,
-         state: {a:1, b:2}
-       }) 
-       //第二种使用方式：传入数值进行前进或后退，类似于5.x中的 history.go()方法
-       navigate(-1)
+   export default function Header() {
+     const navigate = useNavigate();
+     //第一种使用方式：第一个参数指定具体的路径，带斜杠会被认为是一级路由；
+     //第二个参数是配置项，目前可以配置replace和state，params和search配置不了
+     navigate('/home');
+     navigate('detail',{
+       replace: false,
+       state: {
+         id: '1',
+         title: 'title1'
+       }
+     });
+     //第二种使用方式：传入数值进行前进或后退，类似于5.x中的 history.go()方法
+     function back(){
+       navigate(-1);
      }
-   
+     function forward(){
+       navigate(1);
+     }
+     function goTwo(){
+       navigate(2);
+     }
      return (
-       <div>
-         <button onClick={handle}>按钮</button>
+       <div className="header">
+         <h2>React Router6.x Demo</h2>
+         <Button type='primary' onClick={back}>后退</Button>
+         <Button type='primary' onClick={forward}>前进</Button>
+         <Button type='primary' onClick={goTwo}>前进2页</Button>
        </div>
      )
    }
@@ -370,7 +390,7 @@
 
 2. 参数：接收一个完整的路由地址(从一级路由到末级路由)，如：`'/about/message/detail'`或`'/about/message/detail/:id/:title/:content'`。
 
-3. 用的不多，常用 `useParams()`
+3. <mark>用的不多，常用 `useParams()`</mark>
 
 ### 5. useSearchParams()
 
@@ -381,6 +401,7 @@
 3. 示例代码：
    
    ```jsx
+   import React from 'react';
    import { useSearchParams } from 'react-router-dom';
    import { Button } from 'antd';
    
@@ -405,81 +426,63 @@
 
 ### 6. useLocation()
 
-1. 作用：获取当前 location 信息，对标5.x中的路由组件的`location`属性。
+1. 作用：获取 location 对象，即类式组件中的 `this.props.loaction`对象。对象包含`search`、`state` 属性，所以也可以通过 `useLoaction()`来获取`search`、`state`参数。
 
-2. 示例代码：
+2. 参数：无参数。
+
+3. 示例代码：
    
    ```jsx
-   import React from 'react'
-   import {useLocation} from 'react-router-dom'
+   import React from 'react';
+   import { useLocation } from 'react-router-dom';
    
    export default function Detail() {
-       const x = useLocation()
-       console.log('@',x)
-     // x就是location对象: 
-       /*
-           {
-         hash: "",
-         key: "ah9nv6sz",
-         pathname: "/login",
-         search: "?name=zs&age=18",
-         state: {a: 1, b: 2}
-       }
-       */
-       return (
-           <ul>
-               <li>消息编号：{id}</li>
-               <li>消息标题：{title}</li>
-               <li>消息内容：{content}</li>
-           </ul>
-       )
+     // useLocation()可以获取location对象，包含search属性、state属性、pathname属性等等
+     const {state:{id,title,content}} = useLocation();
+   
+     return (
+       <ul className='about-message-detail-list'>
+         <li>id: {id}</li>
+         <li>title: {title}</li>
+         <li>content: {content}</li>
+       </ul>
+     )
    }
    ```
 
-```
-### 6. useMatch()
-
-1. 作用：返回当前匹配信息，对标5.x中的路由组件的`match`属性。
-
-2. 示例代码：
-
-```jsx
-<Route path="/login/:page/:pageSize" element={<Login />}/>
-<NavLink to="/login/1/10">登录</NavLink>
-
-export default function Login() {
-  const match = useMatch('/login/:x/:y')
-  console.log(match) //输出match对象
-  //match对象内容如下：
-  /*
-      {
-      params: {x: '1', y: '10'}
-      pathname: "/LoGin/1/10"  
-      pathnameBase: "/LoGin/1/10"
-      pattern: {
-          path: '/login/:x/:y', 
-          caseSensitive: false, 
-          end: false
-      }
-    }
-  */
-  return (
-      <div>
-      <h1>Login</h1>
-    </div>
-  )
-}
-```
-
 ### 7. useInRouterContext()
 
-​            作用：如果组件在 `<Router>` 的上下文中呈现，则 `useInRouterContext` 钩子返回 true，否则返回 false。
+1. 理解：如果组件在 `<Router>` 的上下文中呈现，则 `useInRouterContext` 钩子返回 true，否则返回 false。
+   
+   > 即如果组件被`<BrowserRouter>`或`HashRouter`包裹，则该在组件中使用`useInRouterContext()`会返回 true。如果`App`组件被包裹，则App组件内的所有组件使用`useInRouterContext()`都会返回 true（不区分路由组件和普通组件）。
+   > 
+   > 作用：当我们使用第三方库的时候，可以使用`useInRouterContext()` 来检测这个库是否是在路由器下封装的。
+
+2. <mark>用的不多。</mark>
 
 ### 8. useNavigationType()
 
-1. 作用：返回当前的导航类型（用户是如何来到当前页面的）。
+1. 作用：返回当前的导航类型，用户判断用户是如何来到当前页面的。
 2. 返回值：`POP`、`PUSH`、`REPLACE`。
-3. 备注：`POP`是指在浏览器中直接打开了这个路由组件（刷新页面）。
+3. 注意：`POP`是指在当前路由下，用户刷新了页面，就会输出 pop。<mark>用的不多</mark>
+
+```jsx
+import React from 'react';
+import { useNavigationType } from 'react-router-dom';
+
+export default function News() {
+  // 判断用户是怎么来到当前路由下的（push、replace、pop）
+  // 当用户在组件News对于的路由下刷新时，就会输出pop
+  console.log(useNavigationType());
+  return (
+    <ul className='about-main-list'>
+      <li>news 1</li>
+      <li>news 2</li>
+      <li>news 3</li>
+    </ul>
+  )
+}
+```
 
 ### 9. useOutlet()
 
@@ -488,12 +491,27 @@ export default function Login() {
 2. 示例代码：
    
    ```jsx
+   import {useOutlet} from 'react-router-dom';
+   
    const result = useOutlet()
    console.log(result)
-   // 如果嵌套路由没有挂载,则result为null
-   // 如果嵌套路由已经挂载,则展示嵌套的路由对象
+   // 如果嵌套路由还没有挂载到页面上，则result为null
+   // 如果嵌套路由已经挂载到页面上，则展示嵌套的路由对象
    ```
 
 ### 10.useResolvedPath()
 
 1. 作用：给定一个 URL值，解析其中的：path、search、hash值。
+
+2. 示例：
+   
+   ```jsx
+   import {useResolvedPath} from 'react-router-dom';
+   // 传入一个URL，会帮助我们解析这个URL，输出：
+   {
+     hash: "#qwe"
+     pathname: "/about/message/detail"
+     search: "?id=2&title=title2"
+   }
+   console.log(useResolvedPath('/about/message/detail?id=2&title=title2#qwe'))
+   ```
