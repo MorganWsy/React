@@ -49,11 +49,11 @@
 
 ## 2. 组件的懒加载
 
-1. 通过 React 的 `lazy函数`配合`import()`动态加载路由组件，路由组件代码会被分开打包。
+1. 通过 React 的 `lazy`函数配合`import()`动态加载路由组件，路由组件代码会被分开打包。
    
    - `lazy` 函数接收一个函数（该函数的返回值是使用`import`函数导入的需要懒加载的组件。）lazy 函数返回的就是需要懒加载的组件。
 
-2. 引入 Suspense 组件，包裹所有路由组件，并提供 `fallback` 属性，属性值为 Home、About 组件加载出来之前的内容，比如`Loading...`
+2. 引入 `Suspense`组件，包裹所有路由组件，并提供 `fallback` 属性，属性值为 Home、About 组件加载出来之前的内容，可以是 react 组件，也可以是原生HTML标签，比如`<h2>Loading...<h2/>`
 
 ```jsx
 import {Suspense, lazy} from 'react';
@@ -71,19 +71,31 @@ const About = lazy(() => {return import('./pages/About')});
 
 ## 3. React hooks
 
+- 先复习一下 React 新的声明周期函数
+
+![](D:\前端\React\01.react-basic\28.react生命周期(new).png)
+
 - React Hook / Hooks 是什么？
   
   - Hook 是 React 16.8.0 版本增加的**新特性/新语法**。
   
   - **可以让你在函数式组件中使用 state 以及其他的 React 特性**。
 
-- 三个常用的 Hook
+- 常用的 Hook
   
   - State Hook:` React.useState()`
   
   - Effect Hook: `React.useEffect()`
   
   - Ref Hook: `React.useRef()`
+  
+  - Memo Hook: `React.useMemo()`
+  
+  - Reducer Hook：`React.useReducer()`
+  
+  - Context Hook：`React.useContext()` 和 `React.createContext()`
+  
+  - Callback Hook：`React.useCallback()`
 
 ### 3.1 State Hook
 
@@ -133,11 +145,11 @@ const About = lazy(() => {return import('./pages/About')});
   }, [stateValue]); 
   ```
   
-  - 如果 useEffec() 的第二个参数是空数组：则 useEffect 的第一个参数对于的函数相当于 `componentDidMount()`。
+  - 如果 useEffec() 的**第二个参数是空数组**：则 useEffect 的第一个参数对应的函数相当于 `componentDidMount()`钩子(**只会在组件初始化后调用一次，即使组件更新了，也不会再调用！！**)。<mark>用的多！</mark>
   
-  - 如果useEffec() 不传第二个参数：则 useEffect 的第一个参数对于的函数相当于 `componentDidMount()` + `componentDidUpdate()`，且会应用于 state 中的所有属性。
+  - 如果useEffec() 不传第二个参数：则 useEffect 的第一个参数对于的函数相当于 `componentDidMount()` + `componentDidUpdate()`，且**会应用于 state 中的所有属性**（<mark>只要某个state发生变化，useEffect的第一个参数函数就会重新执行</mark>）。
   
-  - useEffec() 的第二个参数是` [stateValue1, stateValue2,...]`：则 useEffect 的第一个参数相当于 `componentDidMount()` + `componentDidUpdate()`，则只会应用于数组中的 state 属性。
+  - useEffec() 的第二个参数是` [stateValue1, stateValue2,...]`：则 useEffect 的第一个参数相当于 `componentDidMount()` + `componentDidUpdate()`，则只会应用于数组中的 state 属性（只要stateValue1和stateValue2的值发生变化，useEffect的第一个参数函数就会重新执行）。
 
 - 可以把 useEffect Hook 看做如下三个函数的组合：
   
@@ -149,9 +161,171 @@ const About = lazy(() => {return import('./pages/About')});
 
 ### 3.3 Ref Hook
 
-- Ref Hook 可以在函数组件中存储或查找组件内的标签或任意其它数据。
+- Ref Hook 可以在函数组件中**存储或查找组件内的标签或任意其它数据**。
 - 语法：`const refContainer = React.useRef()`
 - 作用：保存标签对象，功能与类式组件中的 `React.createRef()`一样。
+
+### 3.4 Memo Hook
+
+- 问题1：当子组件没有使用父组件中的任何 state 或 props，父组件更新时，子组件也会跟着更新，这就有了性能问题。Memo Hook 可以帮助我们解决这个问题。
+
+- 问题2：当某个组件中有很多不同的 state 时，某个 state 的改变导致组件重新渲染，从而导致组件中的其他函数也会跟着重新执行，产生性能问题。
+  
+  ......
+
+- 用法：`React.useMemo(()=>{},[])`，**与`React.useEffect()`用法相同！**
+
+- 功能：**相当于类式组件中的`shouldComponentUpdate()`钩子！**
+
+- 实例：只有当`pathname`，即路由链接发是变化时，才会执行`getNavTitle`函数重新获取`navTitle`。就避免了组件中其他状态的改变导致`getNavTitle`函数重新执行。
+  
+  ```tsx
+  import React,{useMemo} from 'react';
+  import { useLocation } from 'react-router-dom';
+  
+  let { pathname } = useLocation();
+  let navTitle = '首页';
+  
+  // KEY:只有当 pathname 的值变化了，才会执行 useMemo 函数的第一个参数函数
+  useMemo(() => {
+    // console.log('pathname 变化了', pathname);
+    navTitle = getNavTitle()
+  }, [pathname])
+  
+  function getNavTitle() {
+    pathname = pathname === '/' ? '/home' : pathname;
+    // 获取当前页面的路由地址
+    let navTitle = '';
+    navList.forEach((item) => {
+      if (item.key === pathname) {
+        navTitle = item.title;
+      } else if (item.children) {
+        let res = item.children.filter((subItem) => {
+          return (item.key + subItem.key) === pathname;
+        });
+        // res是个满足要求的项组成的数组，如果里面有值，则赋值给navTitle
+        if (res.length) {
+          navTitle = item.title + ' / ' + res[0].title;
+        }
+      }
+    });
+    return navTitle;
+  }
+  ```
+
+### 3.5 Reducer Hook
+
+- 与 Context Hook 一起使用，可以实现状态统一管理和共享，比使用 redux 更加方便、简单。
+
+- 实例：
+  
+  ```tsx
+  // src_8_useReducer&useContext/components/Color/index.jsx
+  import React, { createContext, useReducer } from 'react'
+  
+  //在组件外层定义reducer函数（用法与redux中的reducer一样）
+  const colorReducer = (prevState, action) => {
+    const { type, data } = action;
+    switch (type) {
+      case CHANGE_COLOR:
+        return data.color;
+      default:
+        return prevState;
+    }
+  }
+  
+  // 定义action的类型的常量
+  export const CHANGE_COLOR = 'changeColor';
+  // 向外暴露ColorContext上下文对象，以便和Color的子组件通信
+  export const ColorContext = createContext({});
+  
+  export default function Color(props) {
+    // Color组件初始化时，newState 的值为 'seagreen'
+    const [newState, dispatch] = useReducer(colorReducer, 'seagreen');
+  
+    return (
+      // 向子组件共享一个对象，对象包含color和dispatch函数
+      <ColorContext.Provider value={{ color: newState, dispatch: dispatch }}>
+        {/* 将value的值共享给所有Color组件的子组件 */}
+        {props.children}
+      </ColorContext.Provider>
+    )
+  }
+  
+  
+  // src_8_useReducer&useContext/components/MyButton/index.jsx
+  import React, { useContext } from 'react';
+  import { Button } from 'antd';
+  // 引入上下文对象和action的type常量
+  import { ColorContext, CHANGE_COLOR } from '../Color';
+  
+  export default function MyButton() {
+    // 从父组件Color中拿到可以发送action的dispatch函数
+    const { dispatch } = useContext(ColorContext);
+    return (
+      <div>
+        <Button type='primary' onClick={() => { dispatch({ type: CHANGE_COLOR, data: { color: 'red' } }) }}>变红</Button>
+        <Button type='primary' onClick={() => { dispatch({ type: CHANGE_COLOR, data: { color: 'seagreen' } }) }}>变绿</Button>
+      </div>
+    )
+  }
+  
+  
+  ```
+
+### 3.6 Context Hook
+
+- 可以实现祖孙组件、父子组件之间数据的传递。笔记第5点有讲。
+
+- 包括`React.createContext()`和`React.useContext()`
+
+- 与`React.useReducer()`一起使用的例子可以看笔记3.5。
+
+### 3.7 Callback Hook
+
+- 用于缓存函数，作用相当于 `React.useMemo()`。具体不是很懂
+  
+  ```tsx
+  import React, { useState, useEffect, useCallback } from 'react'
+  
+  /* 自定义一个Hook方法 */
+  function useWindowSize() {
+    const [size, setSize] = useState({
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight
+    });
+    // useCallback函数返回一个缓存的函数(第一个参数函数），
+    //它的第二个参数也是接收一组依赖项，只有这些依赖项的值发生变化了，
+    //useCallback的第一个参数函数才会重新执行，并返回一个新的缓存函数。
+    const onResize = useCallback(() => {
+      setSize({
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight
+      });
+    },[]);//不需要改变缓存函数，所以传入了空数组
+  
+    useEffect(() => {
+      // 监听浏览器窗口大小的变化
+      window.addEventListener('resize', onResize);
+      return () => {
+        // 组件卸载之前，清除时间监听
+        window.removeEventListener('resize', onResize);
+      }
+    }, [onResize]);
+    // 返回窗口大小
+    return size;
+  }
+  
+  export default function Size() {
+    const size = useWindowSize();
+    return (
+      <div>
+        <h1>当前窗口大小为: {size.width} x {size.height}</h1>
+      </div>
+    )
+  }
+  
+  ```
 
 ## 4. Fragment组件
 
@@ -178,7 +352,7 @@ const About = lazy(() => {return import('./pages/About')});
 
 - 就是组件实例对象上的 `context` 属性。
 
-- 作用：一种实现组件之间通信的方式，一般用于【祖先组件】与【后代组件】的通信（父子组件通过props 通信，最简单）。
+- 作用：**一种实现组件之间通信的方式，一般用于【祖先组件】与【后代组件】的通信**（父子组件通过props 通信，最简单）。
 
 - 语法：
   
@@ -189,8 +363,8 @@ const About = lazy(() => {return import('./pages/About')});
   - 在祖先组件中，使用 `<XxxContext.Provider>` 包裹子组件，通过标签的 `value` 属性给后代组件传递数据（ value 属性名字是规定死的，不能改）：
     
     ```jsx
-    // value 属性的值可以是任何js支持的数据，如单个数据:value='wsy'或 
-    // value={变量}，则后代组件的context属性的值就是wsy，也可以是对象:value={{username: 'wsy'}}
+    // value 属性的值可以是任何js支持的数据，如单个数据value='wsy'或 
+    // value={变量}，则后代组件的context属性的值就是wsy，也可以是对象value={{username: 'wsy'}}
     <XxxContext.Provider value={数据}>
       <子组件/>
     </XxxContext.Provider>
@@ -198,9 +372,11 @@ const About = lazy(() => {return import('./pages/About')});
   
   - **后代组件声明接收**，就能拿到祖先组件传递过来的数据。
     
-    - 声明接收的第一种方式：**仅适用于类式组件**。
+    - 第一种方式：**仅适用于类式组件**。
     
-    - 声明接收的第二种方式：**类式组件和函数式组件都适用**。
+    - 第二种方式：**类式组件和函数式组件都适用**。
+    
+    - 第三种方式：仅适用于类式组件。
     
     ```jsx
     //第一种方式: 在后代组件中这么写：
@@ -215,6 +391,12 @@ const About = lazy(() => {return import('./pages/About')});
         }
       }       
     </xxxContext.Consumer>
+    //第三种方式:在子组件中
+    import {useContext} from 'react';
+    let value = useContext(xxxContext);
+    return (
+      <div>{value}</div>
+    )
     ```
 
 - 注意：在应用开发中一般不用 context，一般都用它的封装 react 插件。

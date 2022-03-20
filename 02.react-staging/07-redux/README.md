@@ -41,24 +41,24 @@
 1. 下载 redux：`yarn add redux`
 
 2. 在 src 文件夹下新建：
-- redux 文件夹
-  
-  - store.js
-  - count_reducer.js
+   
+   - redux 文件夹
+     
+     - `store.js`
+     
+     - `count_reducer.js`
+
 3. 在 store.js 文件中：
-- 引入 redux 中的 createStore 函数，该函数用于创建 1 个 store；
+   . 引入 redux 中的 createStore 函数，该函数用于创建 1 个 store；
+   . createStore(reducer)接收 1 个为其服务的 reducer（即餐厅老板开店之前需要聘用厨师）；
+   . 将创建的 store 对象暴露出去。
 
-- createStore(reducer)接收 1 个为其服务的 reducer（即餐厅老板开店之前需要聘用厨师）；
-
-- 将创建的 store 对象暴露出去。
 4. 在 count_reducer.js 文件中：
-- reducer 有两个作用：初始化状态、加工状态；
+   . reducer 有两个作用：初始化状态、加工状态；
+   . reducer 本质是 1 个函数，接收 2 个参数：prevousState、action，并返回加工后的状态；
+   . reducer 函数第 1 次调用时（组件状态初始化时），是 store 自动调用的，传递的 prevousState 是 undefined，action 中的 type 是`@@redux/INITx.x.x.x`，`x.x.x.x` 是随机生成的，没有传递 data。后面每当我们传递 action 对象，store 都会帮我们调用 reducer 函数来加工状态。
+   . 将创建的 reducer 函数暴露出去；
 
-- reducer 本质是 1 个函数，接收 2 个参数：prevousState、action，并返回加工后的状态；
-
-- reducer 函数第 1 次调用时（组件状态初始化时），是 store 自动调用的，传递的 prevousState 是 undefined，action 中的 type 是'@@redux/INITx.x.x.x'，x.x.x.x 是随机生成的，没有传递 data。后面每当我们传递 action 对象，store 都会帮我们调用 reducer 函数来加工状态。
-
-- 将创建的 reducer 函数暴露出去；
 5. redux 只负责集中管理组件的状态，不负责渲染页面，所以当组件通过 getState 方法拿到加工后的状态时，组件并不会在页面中重新渲染，这时需要我们在组件中手动监测 redux 中状态的变化：
 
 ```jsx
@@ -133,9 +133,9 @@ store.subscribe(() => {
     };
     ```
 
-# react-redux
+## 7.  react-redux
 
-## 1. 介绍
+### 1. 介绍
 
 - react-redux 是 facebook 官方出品，功能和 redux 一样，但是它是专门为 react 服务的，用法比 redux 更复杂；
 - 它将 react 组件分为 **容器组件** 和 **UI 组件**，它们是父子关系。
@@ -145,11 +145,11 @@ store.subscribe(() => {
   2. 在 src 文件夹下新建 *containers\Count\index.jsx* 文件，在该文件中引入 react-redux 和 Count 的 UI 组件，通**过 react-redux 提供的 connect 函数，将容器组件与 UI 组件建立联系**；
   3. 在 App.jsx 中取消引入 UI 组件，而引入容器组件和 store 对象，**并将 store 对象作为容器组件的 props 属性，而不是在容器组件中直接引入 store 对象!!**。
 
-## 2. 原理图
+### 2. 原理图
 
 <img src="./react-redux%E6%A8%A1%E5%9E%8B%E5%9B%BE.png" title="" alt="原理图" width="565">
 
-## 3. 基本使用
+### 3. 基本使用
 
 容器组件围绕 connect 函数展开工作：
 
@@ -187,7 +187,7 @@ store.subscribe(() => {
 
 3. 使用了 react-redux 就不需要再使用 store.subscribe(()=>{}) 来监测 redux 的状态是否改变了，因为react-redux实现了父组件与子组件通信（**父组件给子组件传递props，只要props属性发送变化，就会重新渲染子组件**）
 
-## 4. 求和案例中 react-redux 优化
+### 4. 求和案例中 react-redux 优化
 
 1. 容器组件和UI组件写在一个文件中。如：`containers/Count/index.jsx`
 
@@ -217,7 +217,7 @@ store.subscribe(() => {
    
    3. 在UI组件中通过`this.props.xxx` 读取和操作 redux 中的状态。
 
-## 5. 完成两个组件之间数据的共享
+### 5. 完成两个组件之间数据的共享
 
 1. 下载 nanoid 库：`yarn add nanoid`，用于生成用户的 id
 
@@ -274,7 +274,7 @@ store.subscribe(() => {
    > 
    >         正如 redux 原理图中所示，reducer 必须返回一个新state，这个新是相对于preState来讲的，它们的地址不应该是相同的。
 
-## 6. react-redux 开发者工具
+### 6. react-redux 开发者工具
 
 1. 在 chrome 应用商店下载插件：`Redux DevTools` 插件。
 
@@ -293,7 +293,7 @@ store.subscribe(() => {
    
    <img src="file:///E:/frontend/Git/笔记/redux开发者工具的使用.png" title="" alt="redux开发者工具的使用" width="339">
 
-# 纯函数
+## 8. 纯函数
 
 1. 纯函数是一类特别的函数：**<u>多次调用同一个函数，传入相同的参数，必定得到相同的输出</u>**。
 
@@ -320,7 +320,7 @@ store.subscribe(() => {
    }
    ```
 
-# 项目打包
+## 9. 项目打包
 
 1. `yarn build` 打包项目，会在项目目录下生成一个`build`文件夹。
 
